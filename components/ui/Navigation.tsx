@@ -39,8 +39,8 @@ export default function Navigation() {
                 src="/assets/image.png"
                 alt="StaffiX Logo"
                 width={150}
-                height={50}
-                className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+                height={150}
+                className="h-1 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
                 priority
                 quality={90}
               />
