@@ -1,0 +1,136 @@
+{
+  "nav": {
+    "product": "Product",
+    "features": "Features",
+    "howItWorks": "How it Works",
+    "useCases": "Use Cases",
+    "pricing": "Pricing",
+    "security": "Security",
+    "integrations": "Integrations",
+    "faq": "FAQ",
+    "bookDemo": "Book a Demo",
+    "startTrial": "Start Free Trial"
+  },
+  "hero": {
+    "headline": "Automate workforce operations inside the tools your team already uses.",
+    "subheadline": "StaffiX runs attendance, break tracking, leave requests, and progress reporting in Slack, Microsoft Teams, LINE, and more—then gives admins a clean dashboard with filters and export-ready records.",
+    "startTrial": "Start Free Trial",
+    "bookDemo": "Book a Demo",
+    "trustText": "Setup in minutes • No behavior change • US & Japan-ready"
+  },
+  "problem": {
+    "title": "The problems with traditional workforce management",
+    "p1": "Chasing check-ins & updates wastes time",
+    "p2": "Spreadsheets create errors and disputes",
+    "p3": "Employees don't want another tool",
+    "solution": "StaffiX solves this by working in the tools people already use."
+  },
+  "benefits": {
+    "title": "Why StaffiX",
+    "b1": "No workflow change for employees",
+    "b2": "Automated reminders (midday updates)",
+    "b3": "Accurate break + work hour tracking",
+    "b4": "Leave policies with audit history",
+    "b5": "Dashboard + filters + export-ready data",
+    "b6": "Multi-language + theme support"
+  },
+  "howItWorks": {
+    "title": "How it Works",
+    "step1": "Install StaffiX to your chat tool(s)",
+    "step2": "Configure shifts, channels, and policies",
+    "step3": "Employees use simple messages (checkin, break, back, checkout, updates, leave)",
+    "step4": "Admins monitor dashboard + export"
+  },
+  "features": {
+    "title": "Powerful Features",
+    "attendance": {
+      "title": "Attendance & Shifts",
+      "desc": "Check-in/out, late detection vs shift window, accurate time formatting (timezone-safe)"
+    },
+    "breaks": {
+      "title": "Break Tracking",
+      "desc": "Multiple sessions/day, daily totals, view sessions detail"
+    },
+    "updates": {
+      "title": "Daily Updates + Reminders",
+      "desc": "updates / today's report / end of day report, reminder after 4 hours automatically, skips if already submitted"
+    },
+    "leave": {
+      "title": "Leave Management",
+      "desc": "Single-day future leave scheduled deduction, multi-day range excludes weekends/holidays, paid/unpaid handling, cancellation + audit trail"
+    }
+  },
+  "integrations": {
+    "title": "Works inside your existing tools.",
+    "desc": "StaffiX brings the same workflow across channels—so your team doesn't learn a new system.",
+    "more": "More platforms supported on request."
+  },
+  "pricing": {
+    "title": "Simple per active employee pricing.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "starter": {
+      "name": "Starter",
+      "price": "$2",
+      "period": "/active employee / month",
+      "min": "$49 minimum",
+      "best": "Best for attendance tracking",
+      "features": [
+        "Attendance + breaks",
+        "Dashboard",
+        "Filters + export",
+        "Standard support"
+      ]
+    },
+    "growth": {
+      "name": "Growth",
+      "popular": "Most Popular",
+      "price": "$4",
+      "period": "/active employee / month",
+      "min": "$149 minimum",
+      "best": "Best for automation (reminders + leave logic)",
+      "features": [
+        "Everything in Starter +",
+        "Midday reminder automation",
+        "Advanced leave management (scheduled deductions)",
+        "Monthly reporting",
+        "Priority support"
+      ]
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "features": [
+        "Invoice/annual contracts",
+        "Dedicated onboarding + SLA"
+      ]
+    },
+    "seePricing": "See Pricing",
+    "faq": {
+      "activeEmployee": "What is an active employee?",
+      "startSmall": "Can we start small?",
+      "newApp": "Do employees need a new app?",
+      "newAppAnswer": "No, StaffiX works inside your existing chat tools.",
+      "platforms": "Do you support Slack/Teams/LINE?",
+      "platformsAnswer": "Yes, and more platforms are available on request.",
+      "security": "Data retention & security"
+    }
+  },
+  "security": {
+    "title": "Security & Trust",
+    "items": [
+      "Secure webhook verification (per platform)",
+      "Data stored securely (PostgreSQL in production)",
+      "Audit trail for leave balance changes",
+      "Role-based admin access (dashboard)",
+      "Optional S3 for documents (if used)"
+    ],
+    "viewSecurity": "View Security"
+  },
+  "cta": {
+    "title": "Stop managing HR ops in spreadsheets.",
+    "startTrial": "Start Free Trial",
+    "bookDemo": "Book a Demo"
+  }
+}
+

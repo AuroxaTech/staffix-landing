@@ -18,24 +18,15 @@ export default function Home() {
         <Hero />
         <ProblemSolution />
         <Benefits />
-        <section id="how-it-works">
-          <HowItWorks />
-        </section>
-        <section id="features">
-          <Features />
-        </section>
-        <section id="integrations">
-          <Integrations />
-        </section>
-        <section id="pricing">
-          <PricingTeaser />
-        </section>
-        <section id="security">
-          <Security />
-        </section>
+        <HowItWorks />
+        <Features />
+        <Integrations />
+        <PricingTeaser />
+        <Security />
         <FinalCTA />
       </main>
       <Footer />
     </>
   );
 }
+
