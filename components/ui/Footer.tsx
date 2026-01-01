@@ -13,7 +13,7 @@ export default function Footer() {
             <Link href="/" className="inline-block mb-4">
               <div className="h-8 w-auto relative">
                 <Image
-                  src="/assets/image.png"
+                  src="/assets/image1.png"
                   alt="StaffiX Logo"
                   width={100}
                   height={32}

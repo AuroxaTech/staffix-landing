@@ -36,13 +36,14 @@ export default function Navigation() {
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity group">
             <div className="h-10 sm:h-12 w-auto relative">
               <Image
-                src="/assets/image.png"
+                src="/assets/image1.png"
                 alt="StaffiX Logo"
                 width={150}
-                height={150}
-                className="h-1 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+                height={50}
+                className="h-12 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
                 priority
                 quality={90}
+                unoptimized={false}
               />
             </div>
           </Link>
