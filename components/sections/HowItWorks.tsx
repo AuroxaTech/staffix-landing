@@ -7,25 +7,25 @@ export default function HowItWorks() {
     { 
       icon: Download, 
       text: "Install StaffiX to your chat tool(s)",
-      desc: "Add StaffiX to Slack, Teams, or LINE in just a few clicks",
+      desc: "Add StaffiX to Slack, Teams, or LINE in just a few clicks. No software installation needed.",
       number: 1 
     },
     { 
       icon: Settings, 
-      text: "Configure shifts, channels, and policies",
-      desc: "Set up your workforce rules through our intuitive dashboard",
+      text: "Configure shifts, policies, and employee profiles",
+      desc: "Set up workforce rules, leave policies, salary settings, and employee information through our intuitive dashboard",
       number: 2 
     },
     { 
       icon: MessageSquare, 
       text: "Employees use simple messages",
-      desc: "Check-in, break, updates, and leave requests via natural language",
+      desc: "Check-in, break, daily updates, and leave requests via natural language. Works exactly where they already communicate.",
       number: 3 
     },
     { 
       icon: Monitor, 
-      text: "Admins monitor dashboard + export",
-      desc: "Real-time visibility with comprehensive reporting and exports",
+      text: "Admins access comprehensive dashboard",
+      desc: "Real-time visibility across attendance, breaks, leaves, salaries, and progress. Export-ready data for payroll and reporting.",
       number: 4 
     },
   ];
@@ -38,7 +38,7 @@ export default function HowItWorks() {
             How it Works
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get started in minutes. No complex setup, no workflow disruption.
+            Complete HR automation in minutes. No complex setup, no workflow disruption, no training required.
           </p>
         </div>
 

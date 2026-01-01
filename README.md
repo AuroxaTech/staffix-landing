@@ -148,4 +148,4 @@ Private - All rights reserved
 
 ## Contact
 
-For questions or support, contact: hello@staffix.com
+For questions or support, contact: hello@staffix.co

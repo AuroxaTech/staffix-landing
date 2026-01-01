@@ -23,18 +23,8 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text Content */}
           <div className="space-y-6">
-            {/* Top badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#22479b]/10 via-blue-500/10 to-purple-500/10 rounded-full border border-[#22479b]/20 backdrop-blur-sm">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#22479b] to-[#3a5fb8] flex items-center justify-center">
-                <Zap className="h-3 w-3 text-white" />
-              </div>
-              <span className="text-xs font-bold text-[#22479b]">No installation required</span>
-              <span className="text-xs text-gray-400">•</span>
-              <span className="text-xs font-medium text-gray-700">Works in existing tools</span>
-            </div>
-            
             {/* Headline */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight">
                 Workforce automation that lives{' '}
                 <span className="relative inline-block">
@@ -42,6 +32,21 @@ export default function Hero() {
                   <div className="absolute bottom-1 left-0 w-full h-3 bg-[#22479b]/10 -rotate-1 rounded"></div>
                 </span>
               </h1>
+              
+              {/* Prominent No Download Message */}
+              <div className="inline-flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-[#22479b]/10 via-blue-500/10 to-purple-500/10 rounded-2xl border-2 border-[#22479b]/30 shadow-lg backdrop-blur-sm">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#22479b] to-[#3a5fb8] flex items-center justify-center shadow-md flex-shrink-0">
+                  <Zap className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-base font-bold text-[#22479b] leading-tight">
+                    No software to download. No new platforms to learn.
+                  </p>
+                  <p className="text-sm font-medium text-gray-700 mt-1">
+                    Works directly in your existing chat tools
+                  </p>
+                </div>
+              </div>
               
               {/* Quick stats */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -62,8 +67,7 @@ export default function Hero() {
             
             {/* Description */}
             <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
-              <span className="font-semibold text-gray-900">No software to download. No new platforms to learn.</span>{' '}
-              StaffiX integrates directly into Slack, Microsoft Teams, LINE, and more—automating attendance, breaks, leave requests, and daily reports right where your team already works.
+              StaffiX integrates directly into Slack, Microsoft Teams, LINE, and more—automating attendance tracking, break management, leave requests, daily progress reports, salary management, and comprehensive HR dashboards right where your team already works.
             </p>
 
             {/* Platform badges */}

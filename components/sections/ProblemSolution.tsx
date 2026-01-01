@@ -29,10 +29,10 @@ export default function ProblemSolution() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            The problems with traditional workforce management
+            Stop managing HR operations in spreadsheets
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Manual processes create inefficiencies and frustration for everyone involved.
+            Manual processes, scattered data, and disconnected tools create inefficiencies and frustration for everyone involved.
           </p>
         </div>
 
@@ -55,8 +55,11 @@ export default function ProblemSolution() {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6 backdrop-blur-sm">
               <CheckCircle2 className="h-12 w-12 text-white" />
             </div>
-            <p className="text-3xl sm:text-4xl font-bold leading-tight max-w-4xl mx-auto">
-              StaffiX solves this by working in the tools people already use.
+            <p className="text-3xl sm:text-4xl font-bold leading-tight max-w-4xl mx-auto mb-4">
+              StaffiX solves this with a complete HR platform that works in the tools people already use.
+            </p>
+            <p className="text-xl text-white/90 max-w-3xl mx-auto">
+              From attendance to payroll, all in one integrated solution—no spreadsheets, no manual tracking, no training required.
             </p>
           </div>
         </div>

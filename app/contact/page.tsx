@@ -1,8 +1,79 @@
+'use client';
+
+import { useState } from 'react';
 import Navigation from '@/components/ui/Navigation';
 import Footer from '@/components/ui/Footer';
-import { Mail, MessageSquare, Calendar } from 'lucide-react';
+import { Mail, MessageSquare, Calendar, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    employees: '',
+    platform: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.id]: e.target.value
+    }));
+    // Clear status when user starts typing
+    if (submitStatus.type) {
+      setSubmitStatus({ type: null, message: '' });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: '' });
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: data.message || 'Demo request submitted successfully! We will contact you soon.'
+        });
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          employees: '',
+          platform: '',
+          message: ''
+        });
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: data.error || 'Failed to submit. Please try again.'
+        });
+      }
+    } catch (error) {
+      setSubmitStatus({
+        type: 'error',
+        message: 'Network error. Please check your connection and try again, or contact us directly at hello@staffix.co'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Navigation />
@@ -22,7 +93,26 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Book a Demo</h2>
-              <form className="space-y-6">
+              
+              {/* Success/Error Messages */}
+              {submitStatus.type && (
+                <div className={`mb-6 p-4 rounded-xl border-2 ${
+                  submitStatus.type === 'success' 
+                    ? 'bg-green-50 border-green-200 text-green-800' 
+                    : 'bg-red-50 border-red-200 text-red-800'
+                }`}>
+                  <div className="flex items-start gap-3">
+                    {submitStatus.type === 'success' ? (
+                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    )}
+                    <p className="text-sm font-medium">{submitStatus.message}</p>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                     Full Name *
@@ -30,8 +120,12 @@ export default function ContactPage() {
                   <input
                     type="text"
                     id="name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#22479b] focus:border-transparent outline-none transition"
                     placeholder="John Doe"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -42,8 +136,12 @@ export default function ContactPage() {
                   <input
                     type="email"
                     id="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#22479b] focus:border-transparent outline-none transition"
                     placeholder="john@company.com"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -54,8 +152,12 @@ export default function ContactPage() {
                   <input
                     type="text"
                     id="company"
+                    required
+                    value={formData.company}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#22479b] focus:border-transparent outline-none transition"
                     placeholder="Acme Inc."
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -65,7 +167,10 @@ export default function ContactPage() {
                   </label>
                   <select
                     id="employees"
+                    value={formData.employees}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#22479b] focus:border-transparent outline-none transition"
+                    disabled={isSubmitting}
                   >
                     <option value="">Select range</option>
                     <option value="1-10">1-10</option>
@@ -82,7 +187,10 @@ export default function ContactPage() {
                   </label>
                   <select
                     id="platform"
+                    value={formData.platform}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#22479b] focus:border-transparent outline-none transition"
+                    disabled={isSubmitting}
                   >
                     <option value="">Select platform</option>
                     <option value="slack">Slack</option>
@@ -99,16 +207,27 @@ export default function ContactPage() {
                   <textarea
                     id="message"
                     rows={4}
+                    value={formData.message}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#22479b] focus:border-transparent outline-none transition"
                     placeholder="Tell us about your needs..."
+                    disabled={isSubmitting}
                   ></textarea>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 bg-gradient-to-r from-[#22479b] to-[#3a5fb8] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#22479b]/30 transition-all duration-200 hover:-translate-y-0.5"
+                  disabled={isSubmitting}
+                  className="w-full px-8 py-4 bg-gradient-to-r from-[#22479b] to-[#3a5fb8] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#22479b]/30 transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
                 >
-                  Schedule Demo
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    'Schedule Demo'
+                  )}
                 </button>
               </form>
             </div>
@@ -157,8 +276,8 @@ export default function ContactPage() {
                 <p className="text-gray-600 mb-4">
                   Prefer email? Drop us a line and we'll get back to you within 24 hours.
                 </p>
-                <a href="mailto:hello@staffix.io" className="text-[#22479b] font-semibold hover:underline">
-                  hello@staffix.io
+                <a href="mailto:hello@staffix.co" className="text-[#22479b] font-semibold hover:underline">
+                  hello@staffix.co
                 </a>
               </div>
             </div>
@@ -169,4 +288,3 @@ export default function ContactPage() {
     </>
   );
 }
-

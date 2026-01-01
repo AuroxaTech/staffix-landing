@@ -17,10 +17,10 @@ export default function FinalCTA() {
           <Sparkles className="h-8 w-8 text-white" />
         </div>
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-          Stop managing HR ops in spreadsheets.
+          Complete HR automation, not just attendance tracking.
         </h2>
         <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-          Join teams worldwide who've automated their workforce operations with StaffiX.
+          Join teams worldwide who've replaced spreadsheets with StaffiX—attendance, breaks, leaves, salaries, and dashboards, all in one platform.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
