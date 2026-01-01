@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productMenuOpen, setProductMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -21,6 +23,26 @@ export default function Navigation() {
       setProductMenuOpen(false);
     }
   };
+
+  const handleSectionClick = (sectionId: string) => {
+    if (pathname === '/') {
+      // If on homepage, scroll to section
+      setTimeout(() => scrollToSection(sectionId), 100);
+    } else {
+      // If on another page, navigate to homepage with hash
+      window.location.href = `/#${sectionId}`;
+    }
+    setMobileMenuOpen(false);
+    setProductMenuOpen(false);
+  };
+
+  // Handle hash navigation when page loads
+  useEffect(() => {
+    if (pathname === '/' && window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      setTimeout(() => scrollToSection(hash), 500);
+    }
+  }, [pathname]);
 
   const navLinks = [
     { id: 'features', label: 'Features' },
@@ -52,7 +74,7 @@ export default function Navigation() {
           <div className="hidden md:flex items-center space-x-1">
             {/* Product Dropdown */}
             <div 
-              className="relative"
+              className="relative group"
               onMouseEnter={() => setProductMenuOpen(true)}
               onMouseLeave={() => setProductMenuOpen(false)}
             >
@@ -61,12 +83,15 @@ export default function Navigation() {
                 <ChevronDown className="ml-1 h-4 w-4" />
               </button>
               {productMenuOpen && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 overflow-hidden">
+                <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 overflow-hidden z-50"
+                     onMouseEnter={() => setProductMenuOpen(true)}
+                     onMouseLeave={() => setProductMenuOpen(false)}
+                >
                   {navLinks.map((link) => (
                     link.id ? (
                       <button
                         key={link.id}
-                        onClick={() => scrollToSection(link.id)}
+                        onClick={() => handleSectionClick(link.id)}
                         className="block w-full text-left px-5 py-3 text-sm text-gray-700 hover:bg-[#22479b]/5 hover:text-[#22479b] transition-colors font-medium"
                       >
                         {link.label}
@@ -86,19 +111,19 @@ export default function Navigation() {
             </div>
 
             <button 
-              onClick={() => scrollToSection('pricing')}
+              onClick={() => handleSectionClick('pricing')}
               className="px-4 py-2 text-gray-700 hover:text-[#22479b] font-medium transition-colors rounded-lg hover:bg-gray-50"
             >
               Pricing
             </button>
             <button 
-              onClick={() => scrollToSection('security')}
+              onClick={() => handleSectionClick('security')}
               className="px-4 py-2 text-gray-700 hover:text-[#22479b] font-medium transition-colors rounded-lg hover:bg-gray-50"
             >
               Security
             </button>
             <button 
-              onClick={() => scrollToSection('integrations')}
+              onClick={() => handleSectionClick('integrations')}
               className="px-4 py-2 text-gray-700 hover:text-[#22479b] font-medium transition-colors rounded-lg hover:bg-gray-50"
             >
               Integrations
@@ -134,13 +159,13 @@ export default function Navigation() {
           <div className="md:hidden py-6 border-t border-gray-200">
             <div className="flex flex-col space-y-2">
               <button 
-                onClick={() => scrollToSection('features')}
+                onClick={() => handleSectionClick('features')}
                 className="text-left px-4 py-3 text-gray-700 hover:text-[#22479b] hover:bg-gray-50 rounded-lg font-medium transition-colors"
               >
                 Features
               </button>
               <button 
-                onClick={() => scrollToSection('how-it-works')}
+                onClick={() => handleSectionClick('how-it-works')}
                 className="text-left px-4 py-3 text-gray-700 hover:text-[#22479b] hover:bg-gray-50 rounded-lg font-medium transition-colors"
               >
                 How it Works
@@ -149,19 +174,19 @@ export default function Navigation() {
                 Use Cases
               </Link>
               <button 
-                onClick={() => scrollToSection('pricing')}
+                onClick={() => handleSectionClick('pricing')}
                 className="text-left px-4 py-3 text-gray-700 hover:text-[#22479b] hover:bg-gray-50 rounded-lg font-medium transition-colors"
               >
                 Pricing
               </button>
               <button 
-                onClick={() => scrollToSection('security')}
+                onClick={() => handleSectionClick('security')}
                 className="text-left px-4 py-3 text-gray-700 hover:text-[#22479b] hover:bg-gray-50 rounded-lg font-medium transition-colors"
               >
                 Security
               </button>
               <button 
-                onClick={() => scrollToSection('integrations')}
+                onClick={() => handleSectionClick('integrations')}
                 className="text-left px-4 py-3 text-gray-700 hover:text-[#22479b] hover:bg-gray-50 rounded-lg font-medium transition-colors"
               >
                 Integrations
