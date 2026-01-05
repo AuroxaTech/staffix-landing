@@ -97,11 +97,11 @@ export default function Hero() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Link
-                href="/trial"
+                href="/signup"
                 className="group inline-flex items-center justify-center px-7 py-3.5 bg-gradient-to-r from-[#22479b] to-[#3a5fb8] text-white rounded-xl font-semibold text-base hover:shadow-xl hover:shadow-[#22479b]/30 transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                <span className="relative">Start Free Trial</span>
+                <span className="relative">Get Started Free</span>
                 <ArrowRight className="relative ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
