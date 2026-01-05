@@ -34,7 +34,8 @@ export default function ContactPage() {
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      const response = await fetch('/api/contact', {
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
+      const response = await fetch(`${API_BASE}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

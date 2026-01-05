@@ -31,7 +31,8 @@ export default function ConnectSlackPage() {
     
     try {
       // Get the Slack OAuth URL from our API
-      const response = await fetch(`/api/slack/auth-url?organizationId=${organizationId}`);
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
+      const response = await fetch(`${API_BASE}/api/slack/auth-url?organizationId=${organizationId}`);
       const data = await response.json();
       
       if (response.ok && data.url) {
