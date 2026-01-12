@@ -112,15 +112,26 @@ export async function GET(request: NextRequest) {
     // Notify the bot server to load this new organization
     // We'll implement this later with an API endpoint
     
+    // Get the base URL for redirect (use public site URL)
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                    process.env.SITE_URL || 
+                    `${request.headers.get('x-forwarded-proto') || 'https'}://${request.headers.get('host')}`;
+    
     // Redirect to completion page
     return NextResponse.redirect(
-      new URL(`/onboarding/complete?success=true`, request.url)
+      new URL(`/onboarding/complete?success=true`, siteUrl)
     );
     
   } catch (error) {
     console.error('❌ Slack OAuth callback error:', error);
+    
+    // Get the base URL for redirect
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                    process.env.SITE_URL || 
+                    `${request.headers.get('x-forwarded-proto') || 'https'}://${request.headers.get('host')}`;
+    
     return NextResponse.redirect(
-      new URL(`/onboarding/slack-error?error=oauth_failed`, request.url)
+      new URL(`/onboarding/slack-error?error=oauth_failed`, siteUrl)
     );
   }
 }
