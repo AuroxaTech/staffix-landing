@@ -7,11 +7,20 @@ const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
 const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI || 'http://localhost:3000/api/slack/callback';
 
 export async function GET(request: NextRequest) {
+  console.log('🔵 Slack OAuth callback received');
+  console.log('   Request URL:', request.url);
+  
   try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const error = searchParams.get('error');
+    
+    console.log('   Query params:', { 
+      hasCode: !!code, 
+      hasState: !!state, 
+      error: error || 'none' 
+    });
     
     // Check if user denied access
     if (error) {
@@ -19,15 +28,19 @@ export async function GET(request: NextRequest) {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
                       process.env.SITE_URL || 
                       'https://staffix.co';
+      console.log('   Redirecting to error page:', `${siteUrl}/onboarding/slack-error?error=${error}`);
       return NextResponse.redirect(
         `${siteUrl}/onboarding/slack-error?error=${error}`
       );
     }
     
     if (!code || !state) {
-      return NextResponse.json(
-        { error: 'Missing authorization code or state' },
-        { status: 400 }
+      console.error('❌ Missing required parameters:', { code: !!code, state: !!state });
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                      process.env.SITE_URL || 
+                      'https://staffix.co';
+      return NextResponse.redirect(
+        `${siteUrl}/onboarding/slack-error?error=missing_parameters`
       );
     }
     
@@ -139,10 +152,14 @@ export async function GET(request: NextRequest) {
                     process.env.SITE_URL || 
                     'https://staffix.co';
     
+    const redirectUrl = `${siteUrl}/onboarding/complete?success=true`;
+    console.log('✅ OAuth completed successfully!');
+    console.log('   Redirecting to:', redirectUrl);
+    console.log('   Organization:', organization.name);
+    console.log('   Slack Team:', teamName);
+    
     // Redirect to completion page
-    return NextResponse.redirect(
-      `${siteUrl}/onboarding/complete?success=true`
-    );
+    return NextResponse.redirect(redirectUrl, { status: 302 });
     
   } catch (error: any) {
     console.error('❌ Slack OAuth callback error:', error);
