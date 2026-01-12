@@ -25,6 +25,7 @@ function SlackErrorContent() {
       'server_error': 'Slack is experiencing issues. Please try again in a few minutes.',
       'workspace_already_connected': 'This Slack workspace is already connected to another StaffiX organization. Each Slack workspace can only be connected to one organization. Please use a different Slack workspace or contact support if you need to transfer the connection.',
       'missing_parameters': 'The authorization request was incomplete. Please try connecting again from the beginning.',
+      'app_not_distributed': 'The Slack app is not configured as a distributed app. This is a configuration issue on our end. Please contact support@staffix.co for assistance. Our team needs to convert the Slack app to a distributed app to support multiple workspaces.',
     };
     
     setError(errorMessages[errorParam || ''] || 'An unexpected error occurred while connecting Slack.');

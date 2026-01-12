@@ -102,11 +102,22 @@ export async function GET(request: NextRequest) {
     
     if (!result.ok) {
       console.error('❌ Slack OAuth failed:', result.error);
+      
+      // Map Slack-specific errors to user-friendly error codes
+      let errorCode = 'oauth_failed';
+      if (result.error === 'invalid_team_for_non_distributed_app') {
+        errorCode = 'app_not_distributed';
+      } else if (result.error === 'access_denied') {
+        errorCode = 'access_denied';
+      } else if (result.error === 'invalid_code') {
+        errorCode = 'invalid_code';
+      }
+      
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
                       process.env.SITE_URL || 
                       'https://staffix.co';
       return NextResponse.redirect(
-        `${siteUrl}/onboarding/slack-error?error=${result.error || 'oauth_failed'}`
+        `${siteUrl}/onboarding/slack-error?error=${errorCode}`
       );
     }
     
