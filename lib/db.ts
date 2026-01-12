@@ -73,10 +73,8 @@ export const db = {
     
     if (USE_POSTGRES) {
       // PostgreSQL: Convert ? to $1, $2, etc.
-      const pgSql = sql.replace(/\?/g, () => {
-        const idx = (sql.match(/\?/g) || []).indexOf('?');
-        return `$${idx + 1}`;
-      });
+      let paramIndex = 0;
+      const pgSql = sql.replace(/\?/g, () => `$${++paramIndex}`);
       const result = await dbConn.query(pgSql, params || []);
       return result.rows[0] as T | undefined;
     } else {
