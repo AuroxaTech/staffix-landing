@@ -1,73 +1,160 @@
 /**
  * Database connection for staffix-web
- * Connects to the same SQLite database used by the bot
+ * Supports both SQLite (local dev) and PostgreSQL (production)
  */
 
-import Database from 'better-sqlite3';
 import path from 'path';
 
-// Path to the bots database
-const DB_PATH = path.join(
-  process.cwd(),
-  '..',
-  'bots',
-  'src',
-  'db',
-  'attendance.db'
-);
+// Detect if we should use PostgreSQL (production) or SQLite (local)
+const USE_POSTGRES = process.env.DB_HOST && process.env.DB_HOST.length > 0;
 
-let dbInstance: Database.Database | null = null;
+// PostgreSQL imports (only used in production)
+let Pool: any = null;
+let pgPool: any = null;
 
-export function getDb(): Database.Database {
-  if (!dbInstance) {
-    try {
-      dbInstance = new Database(DB_PATH);
-      dbInstance.pragma('journal_mode = WAL'); // Better performance
-      console.log('✅ Connected to database:', DB_PATH);
-    } catch (error) {
-      console.error('❌ Database connection failed:', error);
-      throw new Error('Could not connect to database');
+// SQLite imports (only used in local dev)
+let Database: any = null;
+let dbInstance: any = null;
+
+// Initialize the appropriate database connection
+async function initializeDb() {
+  if (USE_POSTGRES) {
+    // PostgreSQL connection
+    if (!Pool) {
+      const { Pool: PgPool } = await import('pg');
+      Pool = PgPool;
+      
+      pgPool = new Pool({
+        host: process.env.DB_HOST,
+        port: parseInt(process.env.DB_PORT || '5432'),
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        ssl: process.env.DB_HOST?.includes('rds.amazonaws.com') 
+          ? { rejectUnauthorized: false } 
+          : false,
+      });
+      
+      console.log('✅ Connected to PostgreSQL database');
     }
+    return pgPool;
+  } else {
+    // SQLite connection (local dev)
+    if (!Database) {
+      const BetterSqlite3 = await import('better-sqlite3');
+      Database = BetterSqlite3.default;
+      
+      const DB_PATH = path.join(
+        process.cwd(),
+        '..',
+        'bots',
+        'src',
+        'db',
+        'attendance.db'
+      );
+      
+      dbInstance = new Database(DB_PATH);
+      dbInstance.pragma('journal_mode = WAL');
+      console.log('✅ Connected to SQLite database:', DB_PATH);
+    }
+    return dbInstance;
   }
-  return dbInstance;
 }
 
-// Database query helpers
+export async function getDb() {
+  return await initializeDb();
+}
+
+// Database query helpers (async for compatibility with both SQLite and PostgreSQL)
 export const db = {
   // Get single row
-  get<T = any>(sql: string, params?: any[]): T | undefined {
-    const dbConn = getDb();
-    return dbConn.prepare(sql).get(params) as T | undefined;
+  async get<T = any>(sql: string, params?: any[]): Promise<T | undefined> {
+    const dbConn = await getDb();
+    
+    if (USE_POSTGRES) {
+      // PostgreSQL: Convert ? to $1, $2, etc.
+      const pgSql = sql.replace(/\?/g, () => {
+        const idx = (sql.match(/\?/g) || []).indexOf('?');
+        return `$${idx + 1}`;
+      });
+      const result = await dbConn.query(pgSql, params || []);
+      return result.rows[0] as T | undefined;
+    } else {
+      // SQLite
+      return dbConn.prepare(sql).get(params) as T | undefined;
+    }
   },
 
   // Get all rows
-  all<T = any>(sql: string, params?: any[]): T[] {
-    const dbConn = getDb();
-    return dbConn.prepare(sql).all(params) as T[];
+  async all<T = any>(sql: string, params?: any[]): Promise<T[]> {
+    const dbConn = await getDb();
+    
+    if (USE_POSTGRES) {
+      // PostgreSQL: Convert ? to $1, $2, etc.
+      let paramIndex = 0;
+      const pgSql = sql.replace(/\?/g, () => `$${++paramIndex}`);
+      const result = await dbConn.query(pgSql, params || []);
+      return result.rows as T[];
+    } else {
+      // SQLite
+      return dbConn.prepare(sql).all(params) as T[];
+    }
   },
 
   // Run query (INSERT, UPDATE, DELETE)
-  run(sql: string, params?: any[]): Database.RunResult {
-    const dbConn = getDb();
-    return dbConn.prepare(sql).run(params);
+  async run(sql: string, params?: any[]): Promise<{ changes: number; lastInsertRowid?: number }> {
+    const dbConn = await getDb();
+    
+    if (USE_POSTGRES) {
+      // PostgreSQL: Convert ? to $1, $2, etc.
+      let paramIndex = 0;
+      const pgSql = sql.replace(/\?/g, () => `$${++paramIndex}`);
+      const result = await dbConn.query(pgSql, params || []);
+      return { changes: result.rowCount || 0 };
+    } else {
+      // SQLite
+      const result = dbConn.prepare(sql).run(params);
+      return { changes: result.changes, lastInsertRowid: result.lastInsertRowid };
+    }
   },
 
   // Execute raw SQL
-  exec(sql: string): void {
-    const dbConn = getDb();
-    dbConn.exec(sql);
+  async exec(sql: string): Promise<void> {
+    const dbConn = await getDb();
+    
+    if (USE_POSTGRES) {
+      await dbConn.query(sql);
+    } else {
+      dbConn.exec(sql);
+    }
   },
 
-  // Transaction - wrap function in better-sqlite3 transaction
-  transaction<T>(fn: () => T): T {
-    const dbConn = getDb();
-    const wrappedFn = dbConn.transaction(fn);
-    return wrappedFn();
+  // Transaction - wrap function in transaction
+  async transaction<T>(fn: () => Promise<T>): Promise<T> {
+    const dbConn = await getDb();
+    
+    if (USE_POSTGRES) {
+      const client = await dbConn.connect();
+      try {
+        await client.query('BEGIN');
+        const result = await fn();
+        await client.query('COMMIT');
+        return result;
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
+    } else {
+      const wrappedFn = dbConn.transaction(fn);
+      return wrappedFn();
+    }
   },
   
   // Get database instance directly (for advanced usage)
-  getInstance(): Database.Database {
-    return getDb();
+  async getInstance() {
+    return await getDb();
   }
 };
 

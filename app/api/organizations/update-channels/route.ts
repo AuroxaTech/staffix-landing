@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const { organizationId, salesChannelId, allowedChannels } = validation.data;
     
     // Verify organization exists
-    const organization = db.get<{ id: string; name: string }>(
+    const organization = await db.get<{ id: string; name: string }>(
       'SELECT id, name FROM organizations WHERE id = ?',
       [organizationId]
     );
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const allowedChannelsStr = allowedChannels?.join(',') || '';
     
     // Update organization settings
-    db.run(`
+    await db.run(`
       UPDATE organizations 
       SET 
         sales_channel_id = ?,

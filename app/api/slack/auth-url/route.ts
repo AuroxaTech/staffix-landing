@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Verify organization exists
-    const organization = db.get<{ id: string; name: string }>(
+    const organization = await db.get<{ id: string; name: string }>(
       'SELECT id, name FROM organizations WHERE id = ?',
       [orgId]
     );

@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     const orgId = stateData.org_id;
     
     // Verify organization exists
-    const organization = db.get<{ id: string; name: string }>(
+    const organization = await db.get<{ id: string; name: string }>(
       'SELECT id, name FROM organizations WHERE id = ?',
       [orgId]
     );
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     console.log('✅ Slack OAuth successful for team:', teamName);
     
     // Update organization with Slack credentials
-    db.run(`
+    await db.run(`
       UPDATE organizations 
       SET 
         slack_workspace_id = ?,

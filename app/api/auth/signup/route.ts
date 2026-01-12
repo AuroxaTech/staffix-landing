@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const { fullName, email, password, organizationName } = validation.data;
     
     // Check if email already exists
-    const existingUser = db.get<{ id: string }>(
+    const existingUser = await db.get<{ id: string }>(
       'SELECT id FROM admin_users WHERE email = ?',
       [email]
     );
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Check if slug is taken
     let finalSlug = slug;
     let counter = 1;
-    while (db.get('SELECT id FROM organizations WHERE slug = ?', [finalSlug])) {
+    while (await db.get('SELECT id FROM organizations WHERE slug = ?', [finalSlug])) {
       finalSlug = `${slug}-${counter}`;
       counter++;
     }
@@ -73,16 +73,15 @@ export async function POST(request: NextRequest) {
     const userId = uuidv4();
     
     try {
-      // Use the database instance directly for transaction
-      const dbInstance = db.getInstance();
-      const txn = dbInstance.transaction(() => {
+      // Use transaction to ensure both operations succeed or fail together
+      await db.transaction(async () => {
         // Create organization
-        dbInstance.prepare(`
+        await db.run(`
           INSERT INTO organizations (
             id, name, slug, subscription_plan, subscription_status,
             trial_ends_at, max_employees, max_departments, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `).run(
+        `, [
           orgId,
           organizationName,
           finalSlug,
@@ -93,16 +92,16 @@ export async function POST(request: NextRequest) {
           5,  // Default department limit
           new Date().toISOString(),
           new Date().toISOString()
-        );
+        ]);
         
         // Create admin user
-        dbInstance.prepare(`
+        await db.run(`
           INSERT INTO admin_users (
             id, organization_id, email, password_hash, full_name, role,
             is_email_verified, email_verification_token, email_verification_expires,
             is_active, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `).run(
+        `, [
           userId,
           orgId,
           email,
@@ -115,11 +114,8 @@ export async function POST(request: NextRequest) {
           1, // Active
           new Date().toISOString(),
           new Date().toISOString()
-        );
+        ]);
       });
-      
-      // Execute the transaction
-      txn();
     } catch (txnError) {
       console.error('❌ Transaction error:', txnError);
       throw txnError;

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Get organization with Slack credentials
-    const organization = db.get<Organization>(
+    const organization = await db.get<Organization>(
       'SELECT * FROM organizations WHERE id = ?',
       [orgId]
     );

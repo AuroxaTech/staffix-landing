@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const { email, password } = validation.data;
     
     // Find user
-    const user = db.get<AdminUser>(
+    const user = await db.get<AdminUser>(
       'SELECT * FROM admin_users WHERE email = ?',
       [email]
     );
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Get organization details
-    const organization = db.get<{ id: string; name: string; slug: string; subscription_status: string }>(
+    const organization = await db.get<{ id: string; name: string; slug: string; subscription_status: string }>(
       'SELECT id, name, slug, subscription_status FROM organizations WHERE id = ?',
       [user.organization_id]
     );
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Update last login
-    db.run(
+    await db.run(
       'UPDATE admin_users SET last_login_at = ? WHERE id = ?',
       [new Date().toISOString(), user.id]
     );
