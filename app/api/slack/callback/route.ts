@@ -118,8 +118,59 @@ export async function GET(request: NextRequest) {
     
     console.log('✅ Slack OAuth successful for team:', teamName);
     
+    // Check if this workspace is already connected to another organization
+    const existingOrg = await db.get<{ id: string; name: string }>(
+      'SELECT id, name FROM organizations WHERE slack_workspace_id = ?',
+      [teamId]
+    );
+    
+    console.log('🔍 Checking workspace connection:', {
+      teamId,
+      currentOrgId: orgId,
+      currentOrgName: organization.name,
+      existingOrgId: existingOrg?.id,
+      existingOrgName: existingOrg?.name,
+      isReconnection: existingOrg?.id === orgId,
+      isConflict: existingOrg && existingOrg.id !== orgId
+    });
+    
+    if (existingOrg && existingOrg.id !== orgId) {
+      console.error(`❌ Slack workspace ${teamId} is already connected to organization: ${existingOrg.name} (${existingOrg.id})`);
+      console.error(`   Attempted to connect to: ${organization.name} (${orgId})`);
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                      process.env.SITE_URL || 
+                      'https://staffix.co';
+      return NextResponse.redirect(
+        `${siteUrl}/onboarding/slack-error?error=workspace_already_connected`
+      );
+    }
+    
+    // If reconnecting the same workspace to the same org, that's fine - just update
+    if (existingOrg && existingOrg.id === orgId) {
+      console.log('✅ Reconnecting workspace to same organization - updating credentials');
+    }
+    
     // Update organization with Slack credentials
+    // Handle the case where workspace might already be connected
     try {
+      // First, clear the workspace from any other organizations (if any)
+      // This handles the case where workspace was previously connected elsewhere
+      // We do this BEFORE updating to avoid unique constraint violation
+      await db.run(`
+        UPDATE organizations 
+        SET slack_workspace_id = NULL, 
+            slack_bot_token = NULL, 
+            slack_team_name = NULL, 
+            slack_bot_user_id = NULL,
+            updated_at = ?
+        WHERE slack_workspace_id = ? AND id != ?
+      `, [
+        new Date().toISOString(),
+        teamId,
+        orgId
+      ]);
+      
+      // Now update this organization with the workspace credentials
       await db.run(`
         UPDATE organizations 
         SET 
@@ -141,6 +192,27 @@ export async function GET(request: NextRequest) {
       console.log('✅ Slack credentials saved for organization:', organization.name);
     } catch (dbError: any) {
       console.error('❌ Database update failed:', dbError);
+      console.error('   Error code:', dbError.code);
+      console.error('   Error constraint:', dbError.constraint);
+      
+      // Handle unique constraint violation (shouldn't happen after our fix, but just in case)
+      if (dbError.code === '23505' && dbError.constraint === 'organizations_slack_workspace_id_key') {
+        const conflictingOrg = await db.get<{ id: string; name: string }>(
+          'SELECT id, name FROM organizations WHERE slack_workspace_id = ?',
+          [teamId]
+        );
+        
+        if (conflictingOrg && conflictingOrg.id !== orgId) {
+          console.error(`❌ Workspace already connected to: ${conflictingOrg.name} (${conflictingOrg.id})`);
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                          process.env.SITE_URL || 
+                          'https://staffix.co';
+          return NextResponse.redirect(
+            `${siteUrl}/onboarding/slack-error?error=workspace_already_connected`
+          );
+        }
+      }
+      
       throw new Error(`Failed to save Slack credentials: ${dbError.message}`);
     }
     

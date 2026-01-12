@@ -23,6 +23,8 @@ function SlackErrorContent() {
       'invalid_code': 'The authorization code was invalid. Please try connecting again.',
       'invalid_state': 'The authorization request was invalid. Please try again.',
       'server_error': 'Slack is experiencing issues. Please try again in a few minutes.',
+      'workspace_already_connected': 'This Slack workspace is already connected to another StaffiX organization. Each Slack workspace can only be connected to one organization. Please use a different Slack workspace or contact support if you need to transfer the connection.',
+      'missing_parameters': 'The authorization request was incomplete. Please try connecting again from the beginning.',
     };
     
     setError(errorMessages[errorParam || ''] || 'An unexpected error occurred while connecting Slack.');
