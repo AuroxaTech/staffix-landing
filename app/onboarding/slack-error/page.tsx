@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function SlackErrorPage() {
+function SlackErrorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
@@ -64,7 +64,7 @@ export default function SlackErrorPage() {
         </h1>
         
         <p className="text-gray-600 text-center mb-6">
-          {error}
+          {error || 'An unexpected error occurred while connecting Slack.'}
         </p>
 
         {/* Action Buttons */}
@@ -98,6 +98,18 @@ export default function SlackErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SlackErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    }>
+      <SlackErrorContent />
+    </Suspense>
   );
 }
 
