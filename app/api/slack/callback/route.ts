@@ -270,8 +270,29 @@ export async function GET(request: NextRequest) {
       throw new Error(`Failed to save Slack credentials: ${dbError.message}`);
     }
     
-    // Notify the bot server to load this new organization
-    // We'll implement this later with an API endpoint
+    // Notify the bot server to reload organizations so it picks up the new workspace
+    try {
+      const botReloadUrl = process.env.BOT_RELOAD_URL || 'http://localhost:3001/reload-organizations';
+      console.log('🔄 Notifying bot server to reload organizations...');
+      
+      const reloadResponse = await fetch(botReloadUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (reloadResponse.ok) {
+        const reloadData = await reloadResponse.json();
+        console.log('✅ Bot server reloaded organizations:', reloadData);
+      } else {
+        console.warn('⚠️ Bot server reload failed (non-critical):', reloadResponse.status);
+      }
+    } catch (reloadError: any) {
+      // Non-critical error - bot will load on next restart or can be manually reloaded
+      console.warn('⚠️ Could not notify bot server to reload (non-critical):', reloadError.message);
+      console.log('   Bot will need to be restarted or manually reloaded to pick up new organization');
+    }
     
     // Get the base URL for redirect (use public site URL)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
