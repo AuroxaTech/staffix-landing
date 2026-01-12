@@ -7,10 +7,10 @@ const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET;
 const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI || 'http://localhost:3000/api/slack/callback';
 
 export async function GET(request: NextRequest) {
-  console.log('🔵 Slack OAuth callback received');
-  console.log('   Request URL:', request.url);
-  
-  try {
+    console.log('🔵 Slack OAuth callback received');
+    console.log('   Request URL:', request.url);
+    
+    try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     const state = searchParams.get('state');
@@ -19,6 +19,8 @@ export async function GET(request: NextRequest) {
     console.log('   Query params:', { 
       hasCode: !!code, 
       hasState: !!state, 
+      stateLength: state?.length,
+      statePreview: state?.substring(0, 100),
       error: error || 'none' 
     });
     
@@ -52,13 +54,54 @@ export async function GET(request: NextRequest) {
     }
     
     // Decode state to get organization ID
+    // State might be URL-encoded, so decode it first
     let stateData: { org_id: string; timestamp: number };
     try {
-      stateData = JSON.parse(Buffer.from(state, 'base64').toString());
-    } catch (e) {
-      return NextResponse.json(
-        { error: 'Invalid state parameter' },
-        { status: 400 }
+      // Try URL decoding first (Slack may encode it)
+      let decodedState = state;
+      try {
+        decodedState = decodeURIComponent(state);
+      } catch {
+        // If URL decode fails, use original state
+        decodedState = state;
+      }
+      
+      // Try to decode from base64
+      let stateString: string;
+      try {
+        stateString = Buffer.from(decodedState, 'base64').toString('utf-8');
+      } catch (base64Error) {
+        // If base64 decode fails, try treating it as plain JSON
+        console.log('⚠️ Base64 decode failed, trying as plain JSON');
+        stateString = decodedState;
+      }
+      
+      // Parse JSON
+      stateData = JSON.parse(stateString);
+      
+      // Validate state structure
+      if (!stateData.org_id) {
+        throw new Error('State missing org_id');
+      }
+      
+      console.log('✅ State decoded successfully:', {
+        orgId: stateData.org_id,
+        timestamp: stateData.timestamp
+      });
+    } catch (e: any) {
+      console.error('❌ Failed to decode state parameter:', {
+        error: e.message,
+        errorStack: e.stack,
+        stateLength: state?.length,
+        statePreview: state?.substring(0, 100),
+        rawState: state
+      });
+      
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                      process.env.SITE_URL || 
+                      'https://staffix.co';
+      return NextResponse.redirect(
+        `${siteUrl}/onboarding/slack-error?error=invalid_state`
       );
     }
     
