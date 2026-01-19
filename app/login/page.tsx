@@ -30,7 +30,21 @@ export default function LoginPage() {
 
       if (response.ok) {
         // Redirect to dashboard
-        window.location.href = 'http://localhost:3002';
+        // Get dashboard URL from environment variable or detect from current hostname
+        let dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL;
+        
+        if (!dashboardUrl) {
+          // Auto-detect based on current hostname
+          const hostname = window.location.hostname;
+          if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            dashboardUrl = 'http://localhost:3002';
+          } else {
+            // Production: use admin subdomain
+            dashboardUrl = 'https://admin.staffix.co';
+          }
+        }
+        
+        window.location.href = dashboardUrl;
       } else {
         setError(data.error || 'Invalid email or password');
       }

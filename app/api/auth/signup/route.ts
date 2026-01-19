@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
           passwordHash,
           fullName,
           'org_admin', // First user is organization admin
-          0, // Not verified yet
+          1, // Email verified (set to 1 since email verification flow isn't implemented yet)
           emailVerificationToken,
           emailVerificationExpires.toISOString(),
           1, // Active
