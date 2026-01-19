@@ -28,8 +28,28 @@ function CompletePageContent() {
   }, [searchParams]);
 
   const handleGoToDashboard = () => {
-    // Redirect to dashboard (port 3002)
-    window.location.href = 'http://localhost:3002';
+    // Get dashboard URL from environment variable or detect from current hostname
+    // For production: https://admin.staffix.co
+    // For local: http://localhost:3002
+    let dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL;
+    
+    if (!dashboardUrl) {
+      // Auto-detect based on current hostname
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          dashboardUrl = 'http://localhost:3002';
+        } else {
+          // Production: use admin subdomain
+          dashboardUrl = 'https://admin.staffix.co';
+        }
+      } else {
+        // Fallback for SSR
+        dashboardUrl = 'https://admin.staffix.co';
+      }
+    }
+    
+    window.location.href = dashboardUrl;
   };
 
   return (

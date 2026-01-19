@@ -36,6 +36,11 @@ EMAIL_FROM_ADDRESS=noreply@staffix.co
 # =============================================================================
 NODE_ENV=development
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Dashboard URL (for redirects after onboarding)
+# For production: https://admin.staffix.co
+# For local: http://localhost:3002 (auto-detected if not set)
+NEXT_PUBLIC_DASHBOARD_URL=https://admin.staffix.co
 ```
 
 ## How to Get Slack Credentials
